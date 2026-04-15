@@ -244,10 +244,52 @@ footer{
 .footer-tag{font-family:"Noto Serif JP",serif;font-weight:200;font-size:.75rem;letter-spacing:.3em;color:rgba(201,162,39,.45)}
 .footer-copy{margin-top:32px;font-size:.72rem;color:rgba(255,255,255,.2);letter-spacing:.1em}
 
+/* ── HAMBURGER ── */
+.hamburger{
+  display:none;
+  flex-direction:column;justify-content:center;align-items:center;
+  width:40px;height:40px;cursor:pointer;gap:6px;background:none;border:none;padding:0;
+}
+.hamburger span{
+  display:block;width:24px;height:1px;
+  background:rgba(201,162,39,.8);
+  transition:all .35s ease;
+  transform-origin:center;
+}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* ── MOBILE MENU ── */
+.mobile-menu{
+  display:none;
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:99;
+  background:rgba(13,26,61,0.98);
+  flex-direction:column;align-items:center;justify-content:center;
+  gap:40px;
+  opacity:0;transition:opacity .35s ease;
+  pointer-events:none;
+}
+.mobile-menu.open{
+  opacity:1;pointer-events:auto;
+}
+.mobile-menu a{
+  font-family:"Cinzel",serif;font-size:1rem;letter-spacing:.4em;
+  color:rgba(255,255,255,.6);text-decoration:none;
+  transition:color .3s;
+}
+.mobile-menu a:hover{color:var(--gold2)}
+.mobile-menu-divider{
+  width:40px;height:1px;
+  background:linear-gradient(to right,transparent,var(--gold),transparent);
+}
+
 /* ── RESPONSIVE ── */
 @media(max-width:900px){
   nav{padding:16px 30px}
   .nav-links{display:none}
+  .hamburger{display:flex}
+  .mobile-menu{display:flex}
   .container{padding:0 30px}
   .mvv-grid,.biz-grid{grid-template-columns:1fr}
   .roadmap-track{grid-template-columns:1fr 1fr;gap:48px 0}
@@ -267,7 +309,27 @@ footer{
     <li><a href="#roadmap">展開</a></li>
     <li><a href="#contact">お問い合わせ</a></li>
   </ul>
+  <button class="hamburger" id="hamburger" aria-label="メニューを開く">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
 </nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-divider"></div>
+  <a href="#philosophy" class="mobile-link">理念</a>
+  <div class="mobile-menu-divider"></div>
+  <a href="#founder" class="mobile-link">代表より</a>
+  <div class="mobile-menu-divider"></div>
+  <a href="#business" class="mobile-link">事業</a>
+  <div class="mobile-menu-divider"></div>
+  <a href="#roadmap" class="mobile-link">展開</a>
+  <div class="mobile-menu-divider"></div>
+  <a href="#contact" class="mobile-link">お問い合わせ</a>
+  <div class="mobile-menu-divider"></div>
+</div>
 
 <!-- HERO -->
 <section id="hero">
@@ -466,5 +528,25 @@ footer{
   <p class="footer-copy">&copy; 2025 ESSENCE EN INCORPORATED. All rights reserved.</p>
 </footer>
 
+
+<script>
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+  document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+});
+
+// メニュー項目クリックで閉じる
+document.querySelectorAll('.mobile-link').forEach(link => {
+  link.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  });
+});
+</script>
 </body>
 </html>
