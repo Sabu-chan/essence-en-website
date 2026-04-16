@@ -3,40 +3,32 @@ export default async function handler(req, res) {
   const dbId  = process.env.NOTION_DB_ID;
 
   if (!token || !dbId) {
-    return res.status(500).json({ error: 'Missing env vars', token: !!token, dbId: !!dbId });
+    return res.status(500).json({ error: 'Missing env vars' });
   }
 
   try {
-    const url = `https://api.notion.com/v1/databases/${dbId}/query`;
-    const body = JSON.stringify({
-      filter: { property: 'published', checkbox: { equals: true } },
-      sorts: [{ property: 'date', direction: 'descending' }]
-    });
-
-    const r = await fetch(url, {
+    const r = await fetch(`https://api.notion.com/v1/databases/${dbId}/query`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Notion-Version': '2022-06-28',
         'Content-Type': 'application/json'
       },
-      body
+      body: JSON.stringify({
+        filter: { property: 'published', checkbox: { equals: true } },
+        sorts: [{ property: 'date', direction: 'descending' }]
+      })
     });
 
-    const text = await r.text();
+    if (!r.ok) return res.status(500).json({ error: 'Notion API request failed.' });
 
-    if (!r.ok) {
-      return res.status(500).json({ error: 'Notion API error', status: r.status, body: text });
-    }
-
-    const data = JSON.parse(text);
+    const data = await r.json();
     const posts = (data.results || []).map(p => {
       const props = p.properties;
       const title = props.title?.title?.[0]?.plain_text || props.Name?.title?.[0]?.plain_text || '';
       const date  = props.date?.date?.start || '';
       const body  = props.body?.rich_text?.[0]?.plain_text || '';
-      const image = props.image?.url || props.image?.files?.[0]?.file?.url || props.image?.files?.[0]?.external?.url || null;
-      return { title, date, body, image };
+      return { title, date, body };
     });
 
     res.setHeader('Cache-Control', 's-maxage=300');
