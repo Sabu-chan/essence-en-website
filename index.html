@@ -129,6 +129,12 @@ section{padding:120px 0}
   position:relative;
   overflow:hidden;
 }
+.phase.slide-in{
+  overflow:visible;
+}
+.phase.slide-in.is-visible::after{
+  display:none;
+}
 .slide-in.is-visible{
   animation:slideB-enter 1s cubic-bezier(.16,1,.3,1) forwards;
 }
